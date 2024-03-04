@@ -8,7 +8,7 @@ const Navbar = () => {
   const pathname = usePathname();
 
   return (
-    <nav className="bg-secondary p-4 rounded-xl w-3/4 gap-2 shadow-sm">
+    <nav className="mt-5 bg-secondary p-4 rounded-xl w-3/4 gap-2 shadow-sm">
       <div className=" flex flex-col-reverse  sm:flex-row sm:items-center sm:justify-around">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <Button
