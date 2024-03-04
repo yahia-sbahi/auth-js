@@ -3,20 +3,9 @@ import authConfig from "./auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
 import { getUserById } from "./data/user";
-import { JWT } from "next-auth/jwt";
 import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
 import { UserRole } from "@prisma/client";
 import { getAccountByUserId } from "./data/account";
-
-declare module "next-auth" {
-  /**
-   * The shape of the user object returned in the OAuth providers' `profile` callback,
-   * or the second parameter of the `session` callback, when using a database.
-   */
-  interface User {
-    role: "ADMIN" | "USER";
-  }
-}
 
 export const {
   handlers: { GET, POST },
@@ -60,22 +49,26 @@ export const {
 
       return true;
     },
-    async session({ session, token }: { session: Session; token: JWT }) {
+
+    async session({ session, token }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
+
       if (token.role && session.user) {
         session.user.role = token.role as UserRole;
       }
-      if (token.isTwoFactorEnabled && session.user) {
+
+      if (session.user) {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
       }
 
       if (session.user) {
         session.user.name = token.name;
-        session.user.email = token.email;
+        session.user.email = token.email ?? "";
         session.user.isOAuth = token.isOAuth as boolean;
       }
+
       return session;
     },
     async jwt({ token }) {
